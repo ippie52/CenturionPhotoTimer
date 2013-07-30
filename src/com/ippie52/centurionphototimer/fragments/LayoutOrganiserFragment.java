@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ippe52.centurionphototimer.R;
+import com.ippie52.centurionphototimer.R;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass. Activities that
