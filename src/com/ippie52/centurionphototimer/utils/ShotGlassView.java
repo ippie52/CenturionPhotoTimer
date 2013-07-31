@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -68,8 +69,8 @@ public class ShotGlassView extends View {
         mDest.set(mGlassOrigin.x, mGlassOrigin.y + mYOffset,
                 mFillImage.getWidth() + mGlassOrigin.x, mFillImage.getHeight()
                         + mGlassOrigin.y);
-        aCanvas.drawBitmap(mFillImage, 0, 0, null);
-        aCanvas.drawBitmap(mFrontMask, 0, 0, null);
+        aCanvas.drawBitmap(mFillImage, mSource, mDest, null);
+        aCanvas.drawBitmap(mFrontMask, mGlassOrigin.x, mGlassOrigin.y, null);
     }
 
     /**
@@ -123,12 +124,28 @@ public class ShotGlassView extends View {
      * timerTaskEventAction - Method used to update the fill amount of the glass
      * **/
     private void timerTaskEventAction() {
-        mCurrentProgressPixels += mCurrentTickInc > 0 ? 1 : -1;
-        if (mCurrentProgressPixels >= mTotalProgressPixels) {
-            mTimer.cancel();
-            mTimer = null;
-        }
-        invalidate();
+        mHandler.post(new Runnable() {
+
+            @Override
+            public void run() {
+                synchronized (this) {
+                    if (mCurrentTickInc > 0) {
+                        ++mCurrentProgressPixels;
+
+                    } else {
+                        --mCurrentProgressPixels;
+                    }
+
+                    if ((mCurrentProgressPixels == mTotalProgressPixels)
+                            && (mTimer != null)) {
+                        mTimer.cancel();
+                        mTimer = null;
+                    }
+
+                    invalidate();
+                }
+            }
+        });
     }
 
     /**
@@ -142,6 +159,7 @@ public class ShotGlassView extends View {
      * **/
     private Bitmap mFrontMask;
     private Bitmap mFillImage;
+    private final Handler mHandler = new Handler();
     private Timer mTimer;
     private int mYOffset;
     private int mCurrentProgressPixels;

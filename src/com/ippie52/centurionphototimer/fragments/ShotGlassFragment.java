@@ -6,10 +6,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.ippie52.centurionphototimer.R;
 import com.ippie52.centurionphototimer.utils.FragmentFrame;
+import com.ippie52.centurionphototimer.utils.ShotGlassView;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass. Activities that
@@ -59,7 +62,38 @@ public class ShotGlassFragment extends Fragment {
         if (frame != null) {
             frame.setColour(0x33552288);
         }
+        mGlass = (ShotGlassView) v.findViewById(R.id.shot_glass_glass_view);
+        if (mGlass != null) {
+            mGlass.setProgressPixels(0);
+        }
+        Button b = (Button) v.findViewById(R.id.shot_glass_update_value_btn);
+        if (b != null) {
+            b.setText("Click me!");
+            b.setOnClickListener(new OnClickListener() {
 
+                @Override
+                public void onClick(View arg0) {
+                    if (mGoingUp) {
+                        int delta = ((mProgress + mGlass.getMaxPixels()) / 2)
+                                - mProgress;
+                        mProgress += delta == 0 ? 1 : delta;
+
+                        if (mProgress == mGlass.getMaxPixels()) {
+                            mGoingUp = !mGoingUp;
+                        }
+
+                    } else {
+                        mProgress /= 2;
+
+                        if (mProgress == 0) {
+                            mGoingUp = !mGoingUp;
+                        }
+
+                    }
+                    mGlass.setProgressPixels(mProgress);
+                }
+            });
+        }
         // Inflate the layout for this fragment
         return v;
     }
@@ -84,6 +118,9 @@ public class ShotGlassFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    private ShotGlassView mGlass;
     private OnShotGlassFragmentListener mListener;
+    private int mProgress = 0;
+    private boolean mGoingUp = true;
 
 }
