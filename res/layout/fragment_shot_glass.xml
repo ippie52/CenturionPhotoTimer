@@ -1,29 +1,17 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    tools:context=".ShotGlassFragment" >
 
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        tools:context=".ShotGlassFragment" >
+    <com.ippie52.centurionphototimer.utils.FragmentFrame
+        android:id="@+id/shot_glass_frag_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-        <com.ippie52.centurionphototimer.utils.FragmentFrame
-            android:id="@+id/shot_glass_frag_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <com.ippie52.centurionphototimer.utils.ShotGlassView
+        android:id="@+id/shot_glass_glass_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-        <com.ippie52.centurionphototimer.utils.ShotGlassView
-            android:id="@+id/shot_glass_glass_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
-
-    <Button
-        android:id="@+id/shot_glass_update_value_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-</LinearLayout>
+</FrameLayout>
