@@ -40,8 +40,8 @@ public class FragmentFrame extends View {
         mPaint.setColor(DEFAULT_COLOUR);
     }
 
-    private static final float X_RADIUS = 12f;
-    private static final float Y_RADIUS = 12f;
+    private static final float X_RADIUS = 8f;
+    private static final float Y_RADIUS = 8f;
     private static final int DEFAULT_COLOUR = 0x22402070;
     private final RectF mRect = new RectF();
     private final Paint mPaint = new Paint();
