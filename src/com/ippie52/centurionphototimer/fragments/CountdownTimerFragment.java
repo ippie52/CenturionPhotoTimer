@@ -1,12 +1,10 @@
 package com.ippie52.centurionphototimer.fragments;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +23,18 @@ public class CountdownTimerFragment extends Fragment {
      * Constructor
      * **/
     public CountdownTimerFragment() {
-        // Required empty public constructor
+    }
+
+    /**
+     * attachListener - Method to attach an {@link OnCountdownTimerListener}
+     * **/
+    public void attachListener(OnCountdownTimerListener aListener) {
+        try {
+            mListeners.add(aListener);
+        } catch (ClassCastException e) {
+            throw new ClassCastException(aListener.toString()
+                    + " must implement OnCountdownTimerListener");
+        }
     }
 
     /**
@@ -33,8 +42,9 @@ public class CountdownTimerFragment extends Fragment {
      * **/
     public void cancel() {
         if (mInitialised && mRunning) {
-            mMajorTickTimer.cancel();
-            mMinorTickTimer.cancel();
+            mMajorCdTimer.cancel();
+            mMinorCdTimer.cancel();
+
             for (OnCountdownTimerListener l : mListeners) {
                 l.onFinalTickEvent();
             }
@@ -45,17 +55,24 @@ public class CountdownTimerFragment extends Fragment {
     /**
      * initialise - Method used to initialise the count down timer
      * 
+     * @param aTotalMinutes
+     *            The number of minutes the timer should run for
+     * @param aMajorTickMs
+     *            The number of milliseconds between each major tick event
+     * @param aMinorTickMs
+     *            The number of milliseconds between each minor tick event
+     * 
      * @throws Exception
      * **/
-    public boolean initialise(final int aTotalMinutes, final int aMajorTick,
-            final int aMinorTick) throws Exception {
+    public boolean initialise(final int aTotalMinutes, final int aMajorTickMs,
+            final int aMinorTickMs) throws Exception {
         boolean result = false;
         if (mRunning) {
             throw new Exception("Cannot initialise when running");
         } else {
             mTotalMinutes = aTotalMinutes;
-            mMajorTickMs = aMajorTick;
-            mMinorTickMs = aMinorTick;
+            mMajorTickMs = aMajorTickMs;
+            mMinorTickMs = aMinorTickMs;
             mInitialised = true;
             result = true;
         }
@@ -72,18 +89,6 @@ public class CountdownTimerFragment extends Fragment {
             mListeners.add((OnCountdownTimerListener) aActivity);
         } catch (ClassCastException e) {
             throw new ClassCastException(aActivity.toString()
-                    + " must implement OnCountdownTimerListener");
-        }
-    }
-
-    /**
-     * onAttach - Overridden method to attach an activity as a listener
-     * **/
-    public void onAttachListener(OnCountdownTimerListener aListener) {
-        try {
-            mListeners.add(aListener);
-        } catch (ClassCastException e) {
-            throw new ClassCastException(aListener.toString()
                     + " must implement OnCountdownTimerListener");
         }
     }
@@ -117,10 +122,15 @@ public class CountdownTimerFragment extends Fragment {
             if (mRunning) {
                 throw new Exception("Error: Attempting to start whilst running");
             }
-            mStartTimeMs = System.currentTimeMillis();
-            mEndTimeMs = calculateEndTime(mStartTimeMs, mTotalMinutes);
-            startMajorTimer(mMajorTickMs);
-            startMinorTimer(mMinorTickMs);
+            final long duration = (SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND * mTotalMinutes);
+
+            if (initialiseMajorTimer(duration, mMajorTickMs)) {
+                mMajorCdTimer.start();
+            }
+            if (initialiseMinorTimer(duration, mMinorTickMs)) {
+                mMinorCdTimer.start();
+            }
+
             mRunning = true;
             result = true;
         }
@@ -128,69 +138,61 @@ public class CountdownTimerFragment extends Fragment {
     }
 
     /**
-     * calculateEndTime - Method used to calculate the end time in milliseconds
-     * **/
-    private long calculateEndTime(final long aStart, final int aMinutes) {
-        final int msPerSec = 1000;
-        final int secPerMin = 60;
-        return (aStart + (secPerMin * msPerSec * aMinutes));
-    }
-
-    /**
-     * getTimeRemaining - Method to get the number of milliseconds remaining
-     * **/
-    private long getTimeRemaining() {
-        return mEndTimeMs - System.currentTimeMillis();
-    }
-
-    /**
-     * startMajorTimer - Start the major tick timer
+     * initialiseMajorTimer - Initialise the major tick timer
      * 
      * @param aTickMs
      *            The tick increment time in milliseconds
      * **/
-    private void startMajorTimer(final int aTickMs) {
-        if (aTickMs != 0) {
-            mMajorTickTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    mHandler.post(new Runnable() {
+    private boolean initialiseMajorTimer(final long aDuration, final int aTickMs) {
+        boolean result = (aTickMs != 0);
+        if (result) {
+            mMajorCdTimer = new CountDownTimer(aDuration, aTickMs) {
 
-                        @Override
-                        public void run() {
-                            for (OnCountdownTimerListener l : mListeners) {
-                                l.onMajorTickEvent(getTimeRemaining());
-                            }
-                        }
-                    });
+                @Override
+                public void onFinish() {
+                    for (OnCountdownTimerListener l : mListeners) {
+                        l.onFinalTickEvent();
+                    }
                 }
-            }, 0, aTickMs);
+
+                @Override
+                public void onTick(long aMillisecondsRemaining) {
+                    for (OnCountdownTimerListener l : mListeners) {
+                        l.onMajorTickEvent(aMillisecondsRemaining);
+                    }
+                }
+            };
         }
+        return result;
     }
 
     /**
-     * startMinorTimer - Start the major tick timer
+     * initialiseMinorTimer - Initialise the major tick timer
      * 
      * @param aTickMs
      *            The tick increment time in milliseconds
      * **/
-    private void startMinorTimer(final int aTickMs) {
-        if (aTickMs != 0) {
-            mMinorTickTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    mHandler.post(new Runnable() {
+    private boolean initialiseMinorTimer(final long aDuration, final int aTickMs) {
+        boolean result = (aTickMs != 0);
+        if (result) {
+            mMinorCdTimer = new CountDownTimer(aDuration, aTickMs) {
 
-                        @Override
-                        public void run() {
-                            for (OnCountdownTimerListener l : mListeners) {
-                                l.onMinorTickEvent(getTimeRemaining());
-                            }
-                        }
-                    });
+                @Override
+                public void onFinish() {
+                    for (OnCountdownTimerListener l : mListeners) {
+                        l.onFinalTickEvent();
+                    }
                 }
-            }, 0, aTickMs);
+
+                @Override
+                public void onTick(long aMillisecondsRemaining) {
+                    for (OnCountdownTimerListener l : mListeners) {
+                        l.onMinorTickEvent(aMillisecondsRemaining);
+                    }
+                }
+            };
         }
+        return result;
     }
 
     /**
@@ -225,18 +227,18 @@ public class CountdownTimerFragment extends Fragment {
         public void onMinorTickEvent(final long aMsRemaining);
     }
 
+    private static final int MILLISECONDS_PER_SECOND = 1000;
+    private static final int SECONDS_PER_MINUTE = 60;
+
     /**
      * Member variables
      * **/
     private final ArrayList<OnCountdownTimerListener> mListeners = new ArrayList<OnCountdownTimerListener>();
-    private long mStartTimeMs;
-    private long mEndTimeMs;
     private int mMajorTickMs;
     private int mMinorTickMs;
     private int mTotalMinutes;
     private boolean mInitialised = false;
     private boolean mRunning = false;
-    private final Timer mMajorTickTimer = new Timer();
-    private final Timer mMinorTickTimer = new Timer();
-    private final Handler mHandler = new Handler();
+    private CountDownTimer mMajorCdTimer;
+    private CountDownTimer mMinorCdTimer;
 }
