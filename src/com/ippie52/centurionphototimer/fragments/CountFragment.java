@@ -75,6 +75,16 @@ public class CountFragment extends Fragment {
     }
 
     /**
+     * Method to set the maximum count value to be displayed
+     * 
+     * @param aMax
+     *            The maximum value to set the count to
+     * **/
+    public void setMax(final int aMax) {
+        mMax = aMax;
+    }
+
+    /**
      * Method to obtain a correctly instantiated instance of the CountFragment
      * 
      * @param aMax
