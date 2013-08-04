@@ -1,9 +1,6 @@
 
 # Individual Files #
 ####################
-bin/classes.dex
-gen/com/itdev/horsetraq/BuildConfig.java
-gen/com/itdev/horsetraq/R.java
 
 # Directories #
 ###############
@@ -49,6 +46,5 @@ gen/
 ._*
 .Spotlight-V100
 .Trashes
-Icon?
 ehthumbs.db
 Thumbs.db
