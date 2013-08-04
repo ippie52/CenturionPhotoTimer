@@ -3,7 +3,6 @@
 
     <string name="app_name">Centurion Photo Timer</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
     <string name="bg_logo_content_desc">Centurion Photo Timer Background Logo</string>
 
     <!-- Button strings -->
@@ -11,6 +10,8 @@
     <string name="home_act_settings_btn">Settings</string>
     <string name="home_act_quit_btn">Quit</string>
     <string name="title_activity_timer">TimerActivity</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    
+    <!-- DialogBuilder strings -->
+    <string name="dialog_builder_default_positive">OK</string>
 
 </resources>
