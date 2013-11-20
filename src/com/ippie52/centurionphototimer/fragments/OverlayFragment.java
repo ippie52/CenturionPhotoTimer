@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ippie52.centurionphototimer.R;
+import com.ippie52.errorhandler.ErrorHandler;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass. Activities that
@@ -29,8 +30,9 @@ public class OverlayFragment extends Fragment {
         try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+            new ErrorHandler(activity, new ClassCastException(
+                    activity.toString()
+                            + " must implement OnFragmentInteractionListener"));
         }
     }
 

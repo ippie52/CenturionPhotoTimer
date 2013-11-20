@@ -1,6 +1,5 @@
 package com.ippie52.centurionphototimer;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -10,11 +9,11 @@ import android.widget.Toast;
 import com.ippie52.centurionphototimer.fragments.CountFragment;
 import com.ippie52.centurionphototimer.fragments.CountdownTimerFragment;
 import com.ippie52.centurionphototimer.fragments.CountdownTimerFragment.OnCountdownTimerListener;
+import com.ippie52.centurionphototimer.fragments.OverlayFragment;
 import com.ippie52.centurionphototimer.fragments.ShotGlassFragment;
-import com.ippie52.centurionphototimer.fragments.TimeToNextFragment.OnTimeToNextFragmentListener;
 
 public class TimerActivity extends FragmentActivity implements
-        OnTimeToNextFragmentListener, OnCountdownTimerListener {
+        OnCountdownTimerListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -26,12 +25,6 @@ public class TimerActivity extends FragmentActivity implements
     @Override
     public void onFinalTickEvent() {
         Toast.makeText(this, "Timer Done", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -83,6 +76,9 @@ public class TimerActivity extends FragmentActivity implements
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        OverlayFragment of = new OverlayFragment();
+        of.onAttach(this);
 
     }
 

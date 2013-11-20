@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ippie52.errorhandler.ErrorHandler;
+
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass. Activities that
  * contain this fragment must implement the
@@ -32,8 +34,8 @@ public class CountdownTimerFragment extends Fragment {
         try {
             mListeners.add(aListener);
         } catch (ClassCastException e) {
-            throw new ClassCastException(aListener.toString()
-                    + " must implement OnCountdownTimerListener");
+            new ErrorHandler(this, new ClassCastException(aListener.toString()
+                    + " must implement OnCountdownTimerListener"));
         }
     }
 
@@ -88,8 +90,8 @@ public class CountdownTimerFragment extends Fragment {
         try {
             mListeners.add((OnCountdownTimerListener) aActivity);
         } catch (ClassCastException e) {
-            throw new ClassCastException(aActivity.toString()
-                    + " must implement OnCountdownTimerListener");
+            new ErrorHandler(this, new ClassCastException(aActivity.toString()
+                    + " must implement OnCountdownTimerListener"));
         }
     }
 

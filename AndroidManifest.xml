@@ -26,6 +26,10 @@
             android:name="com.ippie52.centurionphototimer.TimerActivity"
             android:label="@string/title_activity_timer" >
         </activity>
+        <activity
+            android:name="com.ippie52.errorhandler.ErrorActivity"
+            android:label="@string/error_title" >
+        </activity>
     </application>
 
 </manifest>
